@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asesor IPS · Atypsa</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #1e2537;
+      --border: #2d364e;
+      --me: #3b82f6;
+      --me-text: #fff;
+      --bot: #334155;
+      --bot-text: #f8fafc;
+      --radius: 12px;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      background-color: var(--bg);
+      color: white;
+      font-family: var(--font);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .chat-wrapper {
+      width: 100%;
+      max-width: 400px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    }
+    .header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      font-weight: 500;
+      color: #cbd5e1;
+    }
+    .header strong {
+      color: #fff;
+      font-weight: 600;
+      display: block;
+      font-size: 15px;
+    }
+    #chat-box {
+      height: 380px;
+      overflow-y: auto;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .bubble {
+      max-width: 80%;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .user {
+      background: var(--me);
+      color: var(--me-text);
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+    }
+    .assistant {
+      background: var(--bot);
+      color: var(--bot-text);
+      margin-right: auto;
+      border-bottom-left-radius: 4px;
+    }
+    .input-row {
+      border-top: 1px solid var(--border);
+      padding: 12px;
+      display: flex;
+      gap: 8px;
+    }
+    input[type="text"] {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+    input[type="text"]::placeholder {
+      color: #64748b;
+    }
+    button {
+      background: var(--me);
+      color: var(--me-text);
+      border: 0;
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-wrapper">
+    <div class="header">
+      <strong>Asesor IPS · Atypsa</strong>
+      Cotizaciones de vigas IPS en tiempo real
+    </div>
+
+    <div id="chat-box"></div>
+
+    <div class="input-row">
+      <input id="user-input" type="text" placeholder="Ej: Necesito 2 vigas de 6 pulgadas de 4.3m" />
+      <button id="send-btn">Enviar</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chat-box");
+    const input = document.getElementById("user-input");
+    const sendBtn = document.getElementById("send-btn");
+
+    function addMessage(text, who) {
+      const div = document.createElement("div");
+      div.className = "bubble " + who;
+      div.textContent = text;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      // mensaje del usuario en UI
+      addMessage(text, "user");
+      input.value = "";
+      input.focus();
+
+      // llamada a tu backend
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+
+      const data = await res.json();
+      addMessage(data.reply, "assistant");
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    // Mensaje inicial opcional
+    addMessage(
+      "Hola 👋 Soy la asistente de Atypsa. Dime qué medida de viga IPS ocupas (4\", 5\", 6\" u 8\"), largo y cuántas piezas, y te cotizo.",
+      "assistant"
+    );
+  </script>
+</body>
+</html>
