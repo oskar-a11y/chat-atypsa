@@ -1,4 +1,3 @@
-// api/chat.js
 import OpenAI from "openai";
 
 const client = new OpenAI({
