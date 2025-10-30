@@ -16,9 +16,7 @@
       --radius: 12px;
       --font: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
     }
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       background-color: var(--bg);
       color: white;
@@ -98,9 +96,7 @@
       font-size: 14px;
       outline: none;
     }
-    input[type="text"]::placeholder {
-      color: #64748b;
-    }
+    input[type="text"]::placeholder { color: #64748b; }
     button {
       background: var(--me);
       color: var(--me-text);
@@ -111,9 +107,7 @@
       font-weight: 600;
       cursor: pointer;
     }
-    button:active {
-      transform: scale(0.98);
-    }
+    button:active { transform: scale(0.98); }
   </style>
 </head>
 <body>
@@ -148,32 +142,12 @@
       const text = input.value.trim();
       if (!text) return;
 
-      // mensaje del usuario en UI
       addMessage(text, "user");
       input.value = "";
       input.focus();
 
-      // llamada a tu backend
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text })
-      });
-
-      const data = await res.json();
-      addMessage(data.reply, "assistant");
-    }
-
-    sendBtn.addEventListener("click", sendMessage);
-    input.addEventListener("keydown", e => {
-      if (e.key === "Enter") sendMessage();
-    });
-
-    // Mensaje inicial opcional
-    addMessage(
-      "Hola 👋 Soy la asistente de Atypsa. Dime qué medida de viga IPS ocupas (4\", 5\", 6\" u 8\"), largo y cuántas piezas, y te cotizo.",
-      "assistant"
-    );
-  </script>
-</body>
-</html>
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          bod
